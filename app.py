@@ -39,9 +39,9 @@ t1,t2 = st.columns([0.55,0.45])
 with t1:
     st.title("🧩 Calificaciones PTIES")
     col1, col2 = st.columns([0.5,0.5])
-    col1.image(r'IMAGENES\Escudo_color.png', width=250)
+    col1.image('IMAGENES/Escudo_color.png', width=250)
     #col2.markdown("**Universidad de Nacional de Colombia**")
-t2.image(r'IMAGENES\PTT.png', width=600)
+t2.image('IMAGENES/PTT.png', width=600)
 
 
 
