@@ -13,7 +13,7 @@ import base64
 
 # ---------------- Configuración general ----------------
 st.set_page_config(
-    page_title="Calificaciones PTIES - UdeA",
+    page_title="Calificaciones PTIES - UNAL",
     page_icon="🧩",
     layout="wide",
     initial_sidebar_state="expanded",
