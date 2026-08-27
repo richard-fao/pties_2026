@@ -38,7 +38,7 @@ df = load_example_data()
 t1,t2 = st.columns([0.55,0.45])
 with t1:
     st.title("🧩 Calificaciones PTIES 2026")
-    col1, col2 = st.columns([0.5,0.5])
+    col1, col2 = st.columns([0.55,0.45])
     col1.image('IMAGENES/Escudo_color.png', width=200)
     #col2.markdown("**Universidad de Nacional de Colombia**")
 t2.image('IMAGENES/PTT.png', width=600)
