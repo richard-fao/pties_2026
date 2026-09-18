@@ -38,15 +38,18 @@ df = load_example_data()
 t1,t2 = st.columns([0.55,0.45])
 with t1:
     st.title("🧩 Calificaciones PTIES 2026")
-    col1, col2 = st.columns([0.55,0.45])
-    col1.image('IMAGENES/Escudo_color.png', width=200)
+    col1, col2 = st.columns([0.5,0.5])
+    col1.image('IMAGENES/Escudo_color.png', width=250)
     #col2.markdown("**Universidad de Nacional de Colombia**")
 t2.image('IMAGENES/PTT.png', width=600)
 
 
 
-st.info("📊 **Notas de las evaluaciones:** Las pruebas de **Matemáticas** y **Lenguaje** se califican de **0 a 30 puntos cada una**. "
-    "Cuando se combinan ambas, la calificación total va de **0 a 60 puntos**.")
+st.info("📊 **Notas de las evaluaciones:** Las pruebas de **Matemáticas** y **Lenguaje** se califican de **0 a 50 puntos cada una**. "
+    "Cuando se combinan ambas, la calificación total va de **0 a 100 puntos**.")
+
+# Filtrado de datos según selección
+df_filtered = df.copy()
 
 # ---------------- Pestañas ----------------
 tabs = st.tabs(['Resultados IEMs', 'Resultados Individuales'])
@@ -59,19 +62,28 @@ with tabs[0]:
     )
     # ---------------- Filtros ----------------
     #f1, f2, f3, f4, f5 = st.columns(5)
-    f1, f3, f4 = st.columns(3)
+    f0, f1, f3, f4 = st.columns(4)
 
-    selected_iem = f1.selectbox('IEMs', ['Todas'] + list(df['NOMBRE IEM'].unique()))
+    selected_prueba = f0.selectbox('Evaluación', ['Diagnósticas', "Formativas"] )
+
+    
+    
+    if selected_prueba == 'Diagnósticas':
+        df_filtered = df_filtered[df_filtered['PRUEBA'] == selected_prueba]
+    else:
+        df_filtered = df_filtered[df_filtered['PRUEBA'] != "Diagnósticas"]
+
+    #st.text(f'{df_filtered['PRUEBA'].unique()}')
+    
+    selected_iem = f1.selectbox('IEMs', ['Todas'] + list(df_filtered['NOMBRE IEM'].unique()))
     #selected_municipio = f2.selectbox('Municipios', ['Todos'] + list(df['MUNICIPIO'].unique()))
     selected_grado = f3.selectbox('Grado', ['Todos', 10, 11])
-    selected_evaluacion = f4.selectbox('Evaluación', ['Todas'] + list(df['EVALUACION'].unique()))
+    selected_evaluacion = f4.selectbox('Área', ['Todas'] + list(df_filtered['EVALUACION'].unique()))
     #selected_genero = f5.selectbox('Género', ['Todos', 'Masculino', 'Femenino'])
 
-    # Filtrado de datos según selección
-    df_filtered = df.copy()
 
     materias = '(Matemáticas y Lenguaje)'
-
+    
     if selected_iem != 'Todas':
         df_filtered = df_filtered[df_filtered['NOMBRE IEM'] == selected_iem]
     #if selected_municipio != 'Todos':
@@ -86,21 +98,54 @@ with tabs[0]:
 
     st.markdown("---")  # Separador visual
 
+    Factor = 0
+    if selected_prueba == 'Diagnósticas':
+        df_filtered['CALIFICACION'] = df_filtered['CALIFICACION']*1.666
+        Factor = 1.666
+    else:
+        df_filtered['CALIFICACION'] = df_filtered['CALIFICACION']*2.5
+        Factor = 2.5
+
     # ---------------- Métricas ----------------
-    m1, m2, m3 = st.columns(3)
+    if selected_prueba == 'Diagnósticas':
+        m1, m2, m3 = st.columns(3)
 
-    filtro_mat = df_filtered['EVALUACION'] == 'MATEMÁTICAS'
-    filtro_len = df_filtered['EVALUACION'] == 'LENGUAJE'
+        filtro_mat = df_filtered['EVALUACION'] == 'Matemáticas'
+        filtro_len = df_filtered['EVALUACION'] == 'Lenguaje'
 
-    m1.metric("👨‍🎓 Estudiantes", f"{df_filtered['NUM_DOCUMENTO'].nunique():,}")
-    m2.metric(
-        "📐 Puntaje promedio Matemáticas",
-        f"{df_filtered[filtro_mat]['CALIFICACION'].sum() / max(df_filtered[filtro_mat]['NUM_DOCUMENTO'].nunique(),1):.2f}"
-    )
-    m3.metric(
-        "✍️ Puntaje promedio Lenguaje",
-        f"{df_filtered[filtro_len]['CALIFICACION'].sum() / max(df_filtered[filtro_len]['NUM_DOCUMENTO'].nunique(),1):.2f}"
-    )
+    
+
+        m1.metric("👨‍🎓 Estudiantes", f"{df_filtered['NUM_DOCUMENTO'].nunique():,}")
+        m2.metric(
+            "📐 Puntaje promedio Matemáticas",
+            f"{df_filtered[filtro_mat]['CALIFICACION'].sum() / max(df_filtered[filtro_mat]['NUM_DOCUMENTO'].nunique(),1):.2f}"
+        )
+        m3.metric(
+            "✍️ Puntaje promedio Lenguaje",
+            f"{df_filtered[filtro_len]['CALIFICACION'].sum() / max(df_filtered[filtro_len]['NUM_DOCUMENTO'].nunique(),1):.2f}"
+        )
+    else:
+        m0,m1, m2, m3 = st.columns(4)
+
+        selected_tipo_prueba = m0.selectbox('Tipo Prueba', ['Ambas','A', "B"] )
+
+        if selected_tipo_prueba == 'A':
+            df_filtered = df_filtered[df_filtered['PRUEBA'] == "Formativas_A"]
+        elif selected_tipo_prueba == 'B':
+            df_filtered = df_filtered[df_filtered['PRUEBA'] == "Formativas_B"]
+
+        filtro_mat = df_filtered['EVALUACION'] == 'Matemáticas'
+        filtro_len = df_filtered['EVALUACION'] == 'Lenguaje'
+
+        m1.metric("👨‍🎓 Estudiantes", f"{df_filtered['NUM_DOCUMENTO'].nunique():,}")
+        m2.metric(
+            "📐 Puntaje promedio Matemáticas",
+            f"{df_filtered[filtro_mat]['CALIFICACION'].sum() / max(df_filtered[filtro_mat]['NUM_DOCUMENTO'].nunique(),1):.2f}"
+        )
+        m3.metric(
+            "✍️ Puntaje promedio Lenguaje",
+            f"{df_filtered[filtro_len]['CALIFICACION'].sum() / max(df_filtered[filtro_len]['NUM_DOCUMENTO'].nunique(),1):.2f}"
+        )
 
     
 
@@ -131,7 +176,7 @@ with tabs[0]:
         # ---------------- Tabla pivote con desempeño por competencia ----------------
         df_pivot = df_filtered.pivot_table(
             index='NOMBRE IEM', columns='COMPETENCIA', values='CALIFICACION',
-            aggfunc=lambda x: np.round(x.mean() * 100, 2)
+            aggfunc=lambda x: np.round((x.mean()/Factor)*100, 2)
         )
 
         st.subheader("📊 Desempeño Promedio por Competencia (0-100)")
@@ -148,14 +193,20 @@ with tabs[0]:
             title='Distribución de puntajes por grado'
         )
         fig_box.update_layout(title_font=dict(size=20))
+
         st.plotly_chart(fig_box, use_container_width=True)
+
+
+
+        st.subheader("📊 Desempeño Promedio por Competencia (0-100)")
+
 
         df_pivot = df_filtered.pivot_table(
             index='NOMBRE IEM', columns='COMPETENCIA', values='CALIFICACION',
-            aggfunc=lambda x: np.round(x.mean() * 100, 2)
+            aggfunc=lambda x: np.round((x.mean()/Factor)* 100, 2)
         )
-        st.subheader("📊 Desempeño Promedio por Competencia (0-100)")
         st.dataframe(df_pivot, use_container_width=True)
+       
 
     # ---------------- Gráfico de barras apiladas ----------------
     st.subheader("📊 Distribución porcentual por Competencia y Nivel de Desempeño")
@@ -245,7 +296,19 @@ with tabs[1]:
     if selected_cod in df['NUM_DOCUMENTO'].unique():
         df_cod = df[df['NUM_DOCUMENTO']==selected_cod].copy()
 
-        r1, r2, r3 = st.columns(3) 
+        r0,r1, r2, r3 = st.columns(4) 
+
+        selected_prueba = r0.selectbox('EVALUACIÓN', df_cod['PRUEBA'].unique())
+
+        if selected_prueba == 'Diagnósticas':
+            df_cod = df_cod[df_cod['PRUEBA']=='Diagnósticas']
+            df_cod['CALIFICACION'] = df_cod['CALIFICACION']*1.666
+            Factor = 1.666
+
+        else:
+            df_cod = df_cod[df_cod['PRUEBA']!='Diagnósticas']
+            df_cod['CALIFICACION'] = df_cod['CALIFICACION']*2.5
+            Factor = 2.5
 
         r1.metric(
             "Código",
@@ -254,18 +317,18 @@ with tabs[1]:
 
         r2.metric(
             "📐 Puntaje Matemáticas",
-            f"{df_cod[df_cod['EVALUACION']=='MATEMÁTICAS']['CALIFICACION'].sum():.2f}"
+            f"{df_cod[df_cod['EVALUACION']=='Matemáticas']['CALIFICACION'].sum():.2f}"
         )
         r3.metric(
             "✍️ Puntaje Lenguaje",
-            f"{df_cod[df_cod['EVALUACION']=='LENGUAJE']['CALIFICACION'].sum():.2f}"
+            f"{df_cod[df_cod['EVALUACION']=='Lenguaje']['CALIFICACION'].sum():.2f}"
         )
 
         # ------------ Desempeño Promedio por Competencia ---------------
         
         df_pivot = df_cod.pivot_table(
             index='COMPETENCIA', columns='NUM_DOCUMENTO', values='CALIFICACION',
-            aggfunc=lambda x: np.round(x.mean() * 100, 2)
+            aggfunc=lambda x: np.round((x.mean()/Factor) * 100, 2)
         )
         st.subheader("📊 Desempeño Promedio por Competencia (0-100)")
         st.dataframe(df_pivot, use_container_width=True)
