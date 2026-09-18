@@ -57,7 +57,7 @@ tabs = st.tabs(['Resultados IEMs', 'Resultados Individuales'])
 # --------------------- PESTAÑA RESULTADOS IEMS ---------------------
 with tabs[0]:
     st.markdown(
-    "⚡ **Filtros globales:** Todos los filtros que selecciones (IEM, municipio, grado, género y evaluación) afectan **toda la información mostrada en los gráficos y tablas a continuación**. "
+    "⚡ **Filtros globales:** Todos los filtros que selecciones (Evaluación, IEM, Grado y Área) afectan **toda la información mostrada en los gráficos y tablas a continuación**. "
     "Esto te permite analizar de manera consistente los resultados según tus criterios de selección."
     )
     # ---------------- Filtros ----------------
