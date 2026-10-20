@@ -33,6 +33,7 @@ def load_example_data(filepath='Calificaciones_2026.xlsx') -> pd.DataFrame:
 
 # ---------------- Carga de datos ----------------
 df = load_example_data()
+df['NUM_DOCUMENTO'] = df['NUM_DOCUMENTO'].astype(str)
 
 # ---------------- Título principal ----------------
 t1,t2 = st.columns([0.55,0.45])
