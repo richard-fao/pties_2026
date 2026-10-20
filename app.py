@@ -37,29 +37,13 @@ df = load_example_data()
 df['NUM_DOCUMENTO'] = df['NUM_DOCUMENTO'].astype(str)
 
 # ---------------- Título principal ----------------
-#t1,t2 = st.columns([0.55,0.45])
-#with t1:
-#    st.title("🧩 Calificaciones PTIES 2026")
-#    col1, col2 = st.columns([0.5,0.5])
-#    col1.image('IMAGENES/Escudo_color.png', width=250)
-#    #col2.markdown("**Universidad de Nacional de Colombia**")
-#t2.image('IMAGENES/PTT.png', width=600)
-
-
-t1, t2 = st.columns([0.55, 0.45])
+t1,t2 = st.columns([0.55,0.45])
 with t1:
     st.title("🧩 Calificaciones PTIES 2026")
-    col1, col2 = st.columns([0.5, 0.5])
-    # Abrir la imagen del escudo con PIL y mostrarla
-    escudo_img = Image.open('IMAGENES/Escudo_color.png')
-    col1.image(escudo_img, width=250)
+    col1, col2 = st.columns([0.5,0.5])
+    col1.image('IMAGENES/Escudo_color.png', width=250)
     #col2.markdown("**Universidad de Nacional de Colombia**")
-# Abrir la imagen PTT con PIL y mostrarla
-ptt_img = Image.open('IMAGENES/PTT.png')
-t2.image(ptt_img, width=600)
-
-
-
+t2.image('IMAGENES/PTT.png', width=600)
 
 st.info("📊 **Notas de las evaluaciones:** Las pruebas de **Matemáticas** y **Lenguaje** se califican de **0 a 50 puntos cada una**. "
     "Cuando se combinan ambas, la calificación total va de **0 a 100 puntos**.")
