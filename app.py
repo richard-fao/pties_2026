@@ -57,21 +57,28 @@ tabs = st.tabs(['Resultados IEMs', 'Resultados Individuales'])
 # --------------------- PESTAÑA RESULTADOS IEMS ---------------------
 with tabs[0]:
     st.markdown(
-    "⚡ **Filtros globales:** Todos los filtros que selecciones (Evaluación, IEM, Grado y Área) afectan **toda la información mostrada en los gráficos y tablas a continuación**. "
+    "⚡ **Filtros globales:** Todos los filtros que selecciones (IEM, municipio, grado, género y evaluación) afectan **toda la información mostrada en los gráficos y tablas a continuación**. "
     "Esto te permite analizar de manera consistente los resultados según tus criterios de selección."
     )
     # ---------------- Filtros ----------------
     #f1, f2, f3, f4, f5 = st.columns(5)
     f0, f1, f3, f4 = st.columns(4)
 
-    selected_prueba = f0.selectbox('Evaluación', ['Diagnósticas', "Formativas"] )
+    selected_prueba = f0.selectbox('Evaluación', ['Diagnósticas', "Formativas", "Sumativas"] )
 
     
     
     if selected_prueba == 'Diagnósticas':
-        df_filtered = df_filtered[df_filtered['PRUEBA'] == selected_prueba]
-    else:
-        df_filtered = df_filtered[df_filtered['PRUEBA'] != "Diagnósticas"]
+
+        df_filtered = df_filtered[df_filtered['PRUEBA'] == 'Diagnósticas']
+
+    elif selected_prueba == 'Formativas':
+
+        df_filtered = df_filtered[df_filtered['PRUEBA'].isin(['Formativas_A','Formativas_B'])]
+
+    else: 
+
+        df_filtered = df_filtered[df_filtered['PRUEBA'].isin(['Sumativas_A','Sumativas_B'])]
 
     #st.text(f'{df_filtered['PRUEBA'].unique()}')
     
@@ -99,12 +106,13 @@ with tabs[0]:
     st.markdown("---")  # Separador visual
 
     Factor = 0
-    if selected_prueba == 'Diagnósticas':
-        df_filtered['CALIFICACION'] = df_filtered['CALIFICACION']*1.666
-        Factor = 1.666
-    else:
+    if selected_prueba == 'Formativas':
         df_filtered['CALIFICACION'] = df_filtered['CALIFICACION']*2.5
         Factor = 2.5
+    else:
+        df_filtered['CALIFICACION'] = df_filtered['CALIFICACION']*1.666
+        Factor = 1.666
+        
 
     # ---------------- Métricas ----------------
     if selected_prueba == 'Diagnósticas':
@@ -130,9 +138,9 @@ with tabs[0]:
         selected_tipo_prueba = m0.selectbox('Tipo Prueba', ['Ambas','A', "B"] )
 
         if selected_tipo_prueba == 'A':
-            df_filtered = df_filtered[df_filtered['PRUEBA'] == "Formativas_A"]
+            df_filtered = df_filtered[df_filtered['PRUEBA'].isin(["Formativas_A","Sumativas_A"])]
         elif selected_tipo_prueba == 'B':
-            df_filtered = df_filtered[df_filtered['PRUEBA'] == "Formativas_B"]
+            df_filtered = df_filtered[df_filtered['PRUEBA'].isin(["Formativas_B","Sumativas_B"])]
 
         filtro_mat = df_filtered['EVALUACION'] == 'Matemáticas'
         filtro_len = df_filtered['EVALUACION'] == 'Lenguaje'
@@ -300,15 +308,17 @@ with tabs[1]:
 
         selected_prueba = r0.selectbox('EVALUACIÓN', df_cod['PRUEBA'].unique())
 
-        if selected_prueba == 'Diagnósticas':
-            df_cod = df_cod[df_cod['PRUEBA']=='Diagnósticas']
-            df_cod['CALIFICACION'] = df_cod['CALIFICACION']*1.666
-            Factor = 1.666
-
-        else:
-            df_cod = df_cod[df_cod['PRUEBA']!='Diagnósticas']
+        if selected_prueba in {'Formativas_B','Formativas_A'}:            
+            
+            df_cod = df_cod[df_cod['PRUEBA'] == selected_prueba]
             df_cod['CALIFICACION'] = df_cod['CALIFICACION']*2.5
             Factor = 2.5
+
+        else:
+            
+            df_cod = df_cod[df_cod['PRUEBA'] == selected_prueba]
+            df_cod['CALIFICACION'] = df_cod['CALIFICACION']*1.666
+            Factor = 1.666
 
         r1.metric(
             "Código",
